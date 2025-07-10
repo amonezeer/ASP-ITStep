@@ -1,0 +1,72 @@
+﻿@inject ASP_ITStep.Services.Identity.IIdentityService identityService
+@{
+    ViewData["Title"] = "Identity Service";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Identity Service <i class="fa-solid fa-fingerprint"></i></h1>
+    <p class="lead">Генератор унікальних ідентифікаторів з "перевернутим часом"</p>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-dark text-white">
+        <h3><i class="fa-solid fa-list"></i> Згенеровані ідентифікатори</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @if (ViewData["generatedIds"] != null)
+            {
+                @foreach (var id in (List<long>)ViewData["generatedIds"])
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="border p-3 rounded bg-light">
+                            <h5 class="text-dark">@id</h5>
+                            <small class="text-muted">@identityService.GetIdInfo(id)</small>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-success btn-lg" onclick="generateNewId()">
+                <i class="fa-solid fa-plus"></i> Згенерувати новий ID
+            </button>
+            <button class="btn btn-warning btn-lg ms-2" onclick="location.reload()">
+                <i class="fa-solid fa-refresh"></i> Оновити сторінку
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="newIdResult" class="alert alert-success mt-4" style="display: none;">
+    <h4><i class="fa-solid fa-star"></i> Новий згенерований ID:</h4>
+    <h3 id="newIdValue" class="text-primary"></h3>
+    <p id="newIdInfo"></p>
+</div>
+
+
+<script>
+    function generateNewId() {
+        fetch('/Home/GenerateNewId', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('newIdValue').textContent = data.id;
+            document.getElementById('newIdInfo').textContent = data.info;
+            document.getElementById('newIdResult').style.display = 'block';
+            document.getElementById('newIdResult').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Помилка при генерації нового ID');
+        });
+    }
+</script>
