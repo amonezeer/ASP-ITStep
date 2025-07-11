@@ -27,6 +27,8 @@ namespace ASP_ITStep.Data
                 .HasOne(ua => ua.UserRole)
                 .WithMany(ur => ur.UserAccesses)
                 .HasForeignKey(ua => ua.RoleId);
+
+            modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
         }
     }
 }

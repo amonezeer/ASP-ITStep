@@ -4,6 +4,7 @@ using ASP_ITStep.Services.Kdf;
 using ASP_ITStep.Services.Random;
 using ASP_ITStep.Services.Time;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,5 +61,10 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+using (var scope = app.Services.CreateScope()) 
+{ 
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>(); 
+    await db.Database.MigrateAsync();
+}
 
 app.Run();
