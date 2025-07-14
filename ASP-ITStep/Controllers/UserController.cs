@@ -4,6 +4,7 @@ using ASP_ITStep.Models.User;
 using ASP_ITStep.Services.Kdf;
 using ASP_ITStep.Services.Random;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -15,6 +16,85 @@ namespace ASP_ITStep.Controllers
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _dataContext = context;
         private readonly ILogger<UserController> _logger = logger;
+
+        [HttpGet]
+        public  JsonResult SignIn()
+        {
+            //Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+            String authHeader = Request.Headers.Authorization.ToString();  //  Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+            if (String.IsNullOrEmpty(authHeader)) 
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Missing 'Autorization' header"
+                });
+            }
+            String authScheme = "Basic ";
+            if( ! authHeader.StartsWith(authScheme))
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = $"Autorization scheme error: '{authScheme}' only"
+                });
+            }
+            String credentials = authHeader[authScheme.Length..]; // QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+            String decoded;
+            try
+            {
+                decoded = System.Text.Encoding.UTF8.GetString(
+                Convert.FromBase64String(credentials));
+            }
+            catch(Exception ex) 
+            {
+                _logger.LogError("SignUn: {ex}", ex.Message);
+                return Json(new
+                {
+                    Status = 401,
+                    Data = $"Autorization credential decode error"
+                });
+            }
+            String[] parts = decoded.Split(':', 2);
+            if(parts.Length != 2 )
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = $"Autorization credential decompose error"
+                });
+            }
+            String login = parts[0];
+            String password = parts[1];
+            var userAccess = _dataContext
+            .UserAccesses
+            .AsNoTracking()
+            .Include(ua => ua.UserData)
+            .Include(ua => ua.UserRole)
+            .FirstOrDefault(ua => ua.Login == login);
+
+            if (userAccess == null)
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = $"Autorization credential rejected"
+                });
+            }
+            if(_kdfService.Dk(password, userAccess.Salt) != userAccess.Dk)
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = $"Autorization credential rejected."
+                });
+            }
+            HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
+            return Json(new { 
+            Status = 200,
+            Data = "OK"
+            });
+        }
 
         public ViewResult SignUp()
         {

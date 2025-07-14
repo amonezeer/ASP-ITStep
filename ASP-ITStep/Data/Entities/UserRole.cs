@@ -1,4 +1,6 @@
-﻿namespace ASP_ITStep.Data.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace ASP_ITStep.Data.Entities
 {
     public class UserRole
     {
@@ -9,6 +11,8 @@
         public Boolean CanUpdate { get; set; }   // U
         public Boolean CanDelete { get; set; }   // D
 
+
+        [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
     }
 }

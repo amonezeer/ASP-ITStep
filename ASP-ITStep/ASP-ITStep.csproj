@@ -16,4 +16,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Homework_Screenshots\12.07.2025\" />
+  </ItemGroup>
+
 </Project>

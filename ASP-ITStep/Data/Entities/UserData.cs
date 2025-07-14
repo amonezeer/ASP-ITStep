@@ -1,4 +1,6 @@
-﻿namespace ASP_ITStep.Data.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace ASP_ITStep.Data.Entities
 {
     public class UserData
     {
@@ -9,6 +11,7 @@
         public DateTime RegisteredAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
     }
 }

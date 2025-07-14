@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using ASP_ITStep.Data.Entities
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -34,7 +35,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Demo">Demo</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-danger" asp-area="" asp-controller="Home" asp-action="Ioc">IoC  <i class="fa-solid fa-thumbtack"></i></a>
                         </li>
@@ -43,8 +43,20 @@
                         </li>
                     </ul>
                     <div>
-                        <a class="btn btn-outline-secondary" asp-controller="User" asp-action="SignUp">SignUp  <i class="fa-solid fa-user-tie"></i></a>
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#authModal"><i class="fa-solid fa-right-to-bracket"></i></button>
+                        @if (Context.Items["userAccess"] is UserAccess userAccess)
+                        {
+                            <div class="user-avatar me-3"
+                                 data-bs-toggle="tooltip"
+                                 data-bs-placement="bottom"
+                                 title="@userAccess.UserData.Name">
+                                @userAccess.UserData.Name[0]
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-secondary me-2" asp-controller="User" asp-action="SignUp">SignUp  <i class="fa-solid fa-user-tie"></i></a>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#authModal"><i class="fa-solid fa-right-to-bracket"></i></button>
+                        }
                     </div>
                 </div>
             </div>
@@ -61,6 +73,7 @@
             &copy; 2025 - ASP-ITStep - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -82,11 +95,21 @@
                                    aria-label="Пароль" aria-describedby="user-password-addon">
                             <div class="invalid-feedback"></div>
                         </div>
+
+                        <div id="auth-alert" class="alert alert-danger auth-alert" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="auth-error-message"></span>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                    <button type="submit" class="btn btn-primary" form="sign-in-form">Вхід</button>
+                    <button type="submit" class="btn btn-primary" form="sign-in-form">
+                        <span id="sign-in-btn-text">Вхід</span>
+                        <div id="sign-in-spinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>

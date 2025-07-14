@@ -37,3 +37,49 @@ body {
 .table-hover tbody tr:hover {
     background-color: #f8f9fa;
 }
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(45deg, #007bff, #6f42c1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent; 
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    border: 2px solid #000000;
+    animation: profileGlow 0.5s ease-in-out; 
+}
+
+.auth-alert {
+    margin-top: 15px;
+    display: none;
+    width: 100%;
+    text-align: left;
+}
+
+@keyframes profileGlow {
+    0% {
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    50% {
+        border-color: #ffffff;
+        box-shadow: 0 4px 20px rgba(0, 123, 255, 0.6);
+    }
+
+    100% {
+        border-color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    }
+}

@@ -1,4 +1,5 @@
 using ASP_ITStep.Data;
+using ASP_ITStep.Middleware.Auth;
 using ASP_ITStep.Services.Identity;
 using ASP_ITStep.Services.Kdf;
 using ASP_ITStep.Services.Random;
@@ -29,12 +30,10 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options => 
 { 
-  options.IdleTimeout = TimeSpan.FromSeconds(10);
+  options.IdleTimeout = TimeSpan.FromSeconds(100);
   options.Cookie.HttpOnly = true; 
   options.Cookie.IsEssential = true; 
 });
-
-
 
 
 var app = builder.Build();
@@ -55,6 +54,9 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.UseSession();
+
+app.UseAuthSession();
+
 
 app.MapControllerRoute(
     name: "default",
