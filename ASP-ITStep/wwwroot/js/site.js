@@ -78,3 +78,14 @@ document.addEventListener('submit', e => {
             });
     }
 });
+
+function navigate(route) {
+    const spaContainer = document.getElementById("spa-container");
+    if (!spaContainer) throw "#spa-container not found";
+    switch (route) {
+        case 'home': spaContainer.innerHTML = `<b>Home</b>`; break;
+        case 'privacy': spaContainer.innerHTML = `<b>privacy</b>`; break;
+        case 'auth': spaContainer.innerHTML = `<b>auth</b>`; break;
+        default: spaContainer.innerHTML = `<b>404</b>`; 
+    }
+}

@@ -26,6 +26,10 @@ namespace ASP_ITStep.Controllers
         {
             return View();
         }
+        public IActionResult Spa()
+        {
+            return View();
+        }
         public IActionResult Consp()
         {
             return View();
