@@ -1,5 +1,6 @@
 using ASP_ITStep.Data;
 using ASP_ITStep.Middleware.Auth;
+using ASP_ITStep.Services.Email;
 using ASP_ITStep.Services.Identity;
 using ASP_ITStep.Services.Kdf;
 using ASP_ITStep.Services.Random;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("emailsettings.json");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -17,6 +20,7 @@ builder.Services.AddSingleton<IRandomService, DefaultRandomService>();
 builder.Services.AddSingleton<ITimeService, MilisecTimeService>();
 builder.Services.AddSingleton<IIdentityService, IdentityService>();
 builder.Services.AddSingleton<IKdfService, PbKdfService>();
+builder.Services.AddSingleton<IEmailService, GmailService>();
 
 
 builder.Services.AddDbContext<DataContext>(
@@ -56,6 +60,8 @@ app.MapStaticAssets();
 app.UseSession();
 
 app.UseAuthSession();
+
+app.UseAuthToken();
 
 
 app.MapControllerRoute(
