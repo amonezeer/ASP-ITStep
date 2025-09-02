@@ -2,8 +2,10 @@ using ASP_ITStep.Data;
 using ASP_ITStep.Middleware.Auth;
 using ASP_ITStep.Services.Email;
 using ASP_ITStep.Services.Identity;
+using ASP_ITStep.Services.Jwt;
 using ASP_ITStep.Services.Kdf;
 using ASP_ITStep.Services.Random;
+using ASP_ITStep.Services.Storage;
 using ASP_ITStep.Services.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +23,8 @@ builder.Services.AddSingleton<ITimeService, MilisecTimeService>();
 builder.Services.AddSingleton<IIdentityService, IdentityService>();
 builder.Services.AddSingleton<IKdfService, PbKdfService>();
 builder.Services.AddSingleton<IEmailService, GmailService>();
+builder.Services.AddSingleton<IJwtService, JwtServiceV1>();
+builder.Services.AddSingleton<IStorageService, DiskStorageStorage>();
 
 
 builder.Services.AddDbContext<DataContext>(
@@ -28,19 +32,26 @@ builder.Services.AddDbContext<DataContext>(
         builder.Configuration.GetConnectionString("LocalDb"))
 );
 
+builder.Services.AddScoped<DataAccessor>();
+
 
 
 builder.Services.AddDistributedMemoryCache(); 
 
 builder.Services.AddSession(options => 
 { 
-  options.IdleTimeout = TimeSpan.FromSeconds(100);
+  options.IdleTimeout = TimeSpan.FromSeconds(1000);
   options.Cookie.HttpOnly = true; 
   options.Cookie.IsEssential = true; 
 });
 
 
 var app = builder.Build();
+
+app.UseRequestLocalization(opt =>
+{
+    opt.DefaultRequestCulture = new("en-US");
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -61,7 +72,8 @@ app.UseSession();
 
 app.UseAuthSession();
 
-app.UseAuthToken();
+//app.UseAuthToken();
+app.UseAuthJwt();
 
 
 app.MapControllerRoute(

@@ -1,0 +1,11 @@
+﻿@model ASP_ITStep.Models.Shop.ShopItemPageModel
+
+@if(Model.Product == null)
+{
+    <div class="alert alert-danger" role="alert">  Запитанної позиції не існує!</div>
+}
+else
+{
+   @Model.Product.Name
+}
+

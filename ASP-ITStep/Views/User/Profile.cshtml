@@ -1,0 +1,64 @@
+﻿@model ASP_ITStep.Models.User.UserProfilePageModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4 fw-bold">
+         Кабінет користувача <i class="fa-solid fa-user-circle me-2"></i>
+    </h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col col-xxl-6 offset-xxl-3 col-xl-8 offset-xl-2 col-md-10 offset-md-1 col-sm-12">
+
+        @if (Model.IsPersonal == null)
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <div>Даний профіль не існує або був видалений!</div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+                        <h5 class="fw-semibold text-muted">Ім'я</h5>
+                        <p class="mb-0 fs-5" data-editable="Name">@Model.Name</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h5 class="fw-semibold text-muted">На сайті з</h5>
+                        <p class="mb-0 fs-5">@Model.RegisteredAt</p>
+                    </div>
+
+                    <div class="mb-3">
+                         <h5 class="fw-semibold text-muted">Email</h5>
+                         <span data-editable="Email" class="mb-0 fs-5">
+                         @Model.Email </span><small class="text-muted">*доступно тільки після входу</small>
+                         
+                    </div>
+
+                    @if (Model.IsPersonal ?? false)
+                    {
+                        <div class="mb-3">
+                            <h5 class="fw-semibold text-muted">Дата народження</h5>
+                            <p class="mb-0 fs-5">@Model.Birthdate</p>
+                        </div>
+                        <div class="mb-3">
+                            <h5 class="fw-semibold text-muted">Дата народження</h5>
+                            <p class="mb-0 fs-5">@Model.Birthdate</p>
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button id="edit-profile-btn" class="btn btn-outline-dark">Редагувати профіль <i class="fa-solid fa-pen-fancy me-1"></i></button>
+                            <button id="delete-profile-btn" class="btn btn-outline-dark">Видалити профіль <i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

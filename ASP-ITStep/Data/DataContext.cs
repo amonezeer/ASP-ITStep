@@ -9,6 +9,9 @@ namespace ASP_ITStep.Data
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<UserAccess> UserAccesses { get; set; }
         public DbSet<AccessToken> AccessTokens { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductGroup> ProductGroups { get; set; }
+        public DbSet<ItemImage> Items { get; set; }
         public DataContext(DbContextOptions options) : base(options)
         {
         }
@@ -38,6 +41,11 @@ namespace ASP_ITStep.Data
                 .HasForeignKey(at => at.Sub);
 
             modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.GroupConfiguration());
+
+            modelBuilder.Entity<ItemImage>()
+                .HasKey(i => new { i.ItemId, i.ImageUrl });
         }
     }
 }

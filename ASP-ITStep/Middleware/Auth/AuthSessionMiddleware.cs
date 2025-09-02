@@ -36,7 +36,8 @@ namespace ASP_ITStep.Middleware.Auth
                         new Claim[]
                         {
                             new(ClaimTypes.Name, ua.UserData.Name),
-                            new(ClaimTypes.Email, ua.UserData.Email)
+                            new(ClaimTypes.Email, ua.UserData.Email),
+                            new(ClaimTypes.Sid, ua.Login),
                         },
                         nameof(AuthSessionMiddleware)
                     )

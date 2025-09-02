@@ -1,0 +1,121 @@
+﻿@model ASP_ITStep.Models.Shop.ShopAdminPageModel
+
+@{
+    ViewData["Title"] = "Admin";
+    bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Робоче місце менеджера</h1>
+</div>
+
+@if (isAuthenticated)
+{
+    <form id="group-add-form" action="/api/product-group" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-name-addon">Назва товарної групи:</span>
+                <input name="group-name" type="text" class="form-control"
+                       aria-describedby="group-name-addon group-name-subtitle" />
+            </div>
+            <div class="form-text" id="group-name-subtitle">Введіть назву групи товарів (категорії) як вона буде показана на сайті.</div>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-description-addon">Опис товарної групи:</span>
+                <input name="group-description" type="text" class="form-control"
+                       aria-describedby="group-description-addon group-description-subtitle" />
+            </div>
+            <div class="form-text" id="group-description-subtitle">Детальний опис групи товарів (категорії) як вона буде показана на сайті.</div>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-slug-addon">Адреса товарної групи:</span>
+                <input name="group-slug" type="text" class="form-control"
+                       aria-describedby="group-slug-addon group-slug-subtitle" />
+            </div>
+            <div class="form-text" id="group-slug-subtitle">Частина адреси (slug) для товарної групи.</div>
+        </div>
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="group-img">Зображення для групи</label>
+            <input name="group-img" type="file" class="form-control" id="group-img" />
+        </div>
+
+        <button type="submit" class="btn btn-dark">Додати групу</button>
+    </form>
+
+   <form id="product-add-form" action="/api/product" method="post" enctype="multipart/form-data">
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="product-group-addon">Товарна група:</label>
+            <select name="product-group-id" class="product-group-id" id="product-group-addon">
+                @foreach(var option in Model.ProductGroups)
+                {
+                    <option value="@option.Value">@option.Content</option>
+                }
+            </select>
+            </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="product-name-addon">Назва товару:</span>
+                <input name="product-name" type="text" class="form-control"
+                       aria-describedby="product-name-addon product-name-subtitle" />
+            </div>
+            <div class="form-text" id="group-name-subtitle">Введіть назву товару як вона буде показана на сайті.</div>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="product-description-addon">Опис товарy</span>
+                <input name="product-description" type="text" class="form-control"
+                       aria-describedby="product-description-addon product-description-subtitle" />
+            </div>
+            <div class="form-text" id="group-description-subtitle">Детальний опис товарyяк вона буде показана на сайті.</div>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="product-slug-addon">Адреса товарy</span>
+                <input name="product-slug" type="text" class="form-control"
+                       aria-describedby="product-slug-addon product-slug-subtitle" />
+            </div>
+            <div class="form-text" id="group-slug-subtitle">Частина адреси (slug) для сторінки товару.</div>
+        </div>
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="product-img">Зображення для товару</label>
+            <input name="product-img" type="file" class="form-control" id="product-img" />
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="product-price-addon">Вартість товарy</span>
+                <input name="product-price" type="number" min="0" step="0.01" class="form-control"
+                       aria-describedby="product-price-addon product-price-subtitle" />
+            </div>
+            <div class="form-text" id="group-price-subtitle">Ціна товару для споживача, грн.</div>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="product-stock-addon">Кількість товарy</span>
+                <input name="product-stock" type="number" min="0" step="1" class="form-control"
+                       aria-describedby="product-stock-addon product-stock-subtitle" />
+            </div>
+            <div class="form-text" id="group-stock-subtitle">Кількість товару, що додається.</div>
+        </div>
+
+        <button type="submit" class="btn btn-dark">Додати товар <i class="fa-solid fa-plus"></i></button>
+   </form>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">  
+        Для робити з даними необхідний обліковий запис менеджера!
+    </div>
+}

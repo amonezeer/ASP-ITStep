@@ -5,6 +5,9 @@
     String nameLetter = isAuthenticated 
     ? Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value
     : "";
+    String userLogin = isAuthenticated 
+    ? Context.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value
+    : "";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -50,18 +53,21 @@
                         </li> <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Spa">SPA</a>
                         </li>
+                        </li> <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Shop" asp-action="Index">Shop</a>
+                        </li>
                     </ul>
                     <div>      
                         @if (isAuthenticated)
                         {
-                            <b>@nameLetter</b>
+                            <a class="text-dark" asp-area="" asp-controller="User" asp-action="Profile" asp-route-id="@userLogin">Профіль <i class="fa-solid fa-user"></i></a>
+
                             <a class="btn btn-outline-secondary" href="?logout"><i class="bi bi-box-arrow-right"></i></a>
                             
                         }
                         else
                         {
                             <a class="btn btn-outline-secondary" asp-controller="User" asp-action="SignUp"><i class="bi bi-person-circle"></i></a>
-                            <!-- Button trigger modal -->
                             <button type="button" class="btn btn-outline-secondary"
                                     data-bs-toggle="modal" data-bs-target="#authModal">
                                 <i class="bi bi-box-arrow-in-right"></i>
@@ -128,6 +134,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/shop.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

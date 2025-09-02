@@ -112,3 +112,62 @@ public static class AuthTokenMiddlewareExtension
             }
         }
 }
+
+
+//using ASP_ITStep.Data;
+//using ASP_ITStep.Data.Entities;
+//using Microsoft.EntityFrameworkCore;
+//using System.Security.Claims;
+//using System.Text.Json;
+
+//namespace ASP_ITStep.Middleware.Auth
+//{
+//    public class AuthTokenMiddleware
+//    {
+//        private readonly RequestDelegate _next;
+//        public AuthTokenMiddleware(RequestDelegate next)
+//        {
+//            _next = next;
+//        }
+//        public async Task InvokeAsync(HttpContext context, DataContext dataContext)
+//        {
+//           if (context
+//                .Request
+//                .Headers
+//                .Authorization
+//                .FirstOrDefault(h => h?.StartsWith("Bearer ") ?? false)
+//                is String authHeader)
+//            {
+//                String jti = authHeader[7..];
+//                if (dataContext
+//                    .AccessTokens
+//                    .AsNoTracking()
+//                    .Include(at => at.userAccess)
+//                        .ThenInclude(ua => ua.UserData)
+//                    .FirstOrDefault(at => at.Jti == jti)
+//                    is AccessToken accesstoken)
+//                {
+//                    context.User = new ClaimsPrincipal(
+//                        new ClaimsIdentity(
+//                            new Claim[]
+//                            {
+//                            new(ClaimTypes.Name, accesstoken.userAccess.UserData.Name),
+//                            new(ClaimTypes.Email, accesstoken.userAccess.UserData.Email)
+//                            },
+//                            nameof(AuthTokenMiddleware)
+//                        )
+//                    );
+//                }
+//            }
+//            await _next(context);
+//        }
+//    }
+//    public static class AuthTokenMiddlewareExtension
+//    {
+//        public static IApplicationBuilder UseAuthToken
+//        (this IApplicationBuilder builder)
+//        {
+//            return builder.UseMiddleware<AuthTokenMiddleware>();
+//        }
+//    }
+//}

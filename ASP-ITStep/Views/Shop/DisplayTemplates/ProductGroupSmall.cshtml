@@ -1,0 +1,13 @@
+﻿@model ASP_ITStep.Data.Entities.ProductGroup
+
+<div class="d-inline-block text-center me-3">
+    <a asp-action="Group" asp-route-id="@(Model.Slug)" class="text-decoration-none">
+        <img src="/Storage/Item/@(Model.ImageUrl)"
+             alt="@Model.Name"
+             class="rounded-circle border mb-2"
+             style="width: 80px; height: 80px; object-fit: cover;" />
+        <div>
+            <span class="badge bg-dark">@Model.Name</span>
+        </div>
+    </a>
+</div>
