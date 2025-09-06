@@ -35,6 +35,11 @@ namespace ASP_ITStep.Controllers
             };
             return View(model);
         }
+
+        public IActionResult Cart()
+        {
+            return View();
+        }
         public IActionResult Admin()
         {
             ShopAdminPageModel model = new()

@@ -10,6 +10,11 @@ namespace ASP_ITStep.Data
         private readonly DataContext _dataContext = dataContext;
         private readonly ILogger<DataAccessor> _logger = logger;
 
+        public void AddToCart(String userId, String productId)
+        {
+
+        }
+
         public bool IsGroupSlugUsed(String slug)
         {
             return _dataContext.ProductGroups.Any(g => g.Slug == slug);

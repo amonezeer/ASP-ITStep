@@ -1,6 +1,7 @@
 ﻿using ASP_ITStep.Data;
 using ASP_ITStep.Data.Entities;
 using ASP_ITStep.Models.Api.Group;
+using ASP_ITStep.Models.Rest;
 using ASP_ITStep.Services.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,24 +50,47 @@ namespace ASP_ITStep.Controllers.Api
 
 
         [HttpGet]
-        public IEnumerable<ProductGroup> ExecuteGET()
+        public RestResponse ExecuteGET()
         {
-            return _dataAccessor.GetProductGroups();
+            var groups = _dataAccessor.GetProductGroups();
+            RestResponse response = new();
+            response.Meta.ResourceName = "ProductGroups";
+            response.Meta.ResourceUrl = "/api/product-group";
+            response.Meta.Method = "GET";
+            response.Meta.DataType = nameof(ProductGroup);
+
+            response.Status = new RestStatus
+            {
+                Code = 200,
+                IsOk = true,
+                Phrase = "OK"
+            };
+            return response;
         }
 
         [HttpPost]
-        public object ExecutePOST(ApiGroupFormModel formModel)
+        public RestResponse ExecutePOST([FromForm] ApiGroupFormModel formModel)
         {
-            if(string.IsNullOrEmpty(formModel.Slug))
+            RestResponse response = new();
+
+            if (string.IsNullOrEmpty(formModel.Slug))
             {
-                return new { status = 400, name = "Slug could not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Slug is required";
             }
             if(_dataAccessor.IsGroupSlugUsed(formModel.Slug))
             {
-                return new { status = 409, name = "Slug is used by other group" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Slug is already used";
             }
 
-            string savedName;
+            if (!_dataAccessor.IsGroupExists(formModel.ParentId))
+            {
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "ParentId does not exist";
+            }
+
+            string? savedName = null;
             try
             {
                 _storageService.TryGetMineType(formModel.ImageUrl.FileName);
@@ -74,21 +98,38 @@ namespace ASP_ITStep.Controllers.Api
             }
             catch (Exception ex)
             {
-                return new { status = 400, name = ex.Message };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Image upload failed: " + ex.Message;
             }
             try
             {
-                _dataAccessor.AddProductGroup(new()
+                if (savedName != null)
                 {
-                    Name = formModel.Name,
-                    Description = formModel.Description,
-                    Slug = formModel.Slug,
-                    ParentId = formModel.ParentId,
-                    ImageUrl = savedName
-                });
-               return new { status = 201, name = "Created" };
-            }
-             catch { return new { status = 500, name = "Error" }; }    
+                    _dataAccessor.AddProductGroup(new()
+                    {
+                        Name = formModel.Name,
+                        Description = formModel.Description,
+                        Slug = formModel.Slug,
+                        ParentId = formModel.ParentId,
+                        ImageUrl = savedName
+                    });
+                }
+
+                response.Status = RestStatus.RestStatus201;
+            }    
+             catch { response.Status = RestStatus.RestStatus500; } 
+            return response; 
+        }
+        
+        private RestMeta CreateMeta(string method)
+        {
+            return new RestMeta
+            {
+                ResourceName = "ProductGroups",
+                ResourceUrl = "/api/product-group",
+                Method = method,
+                DataType = nameof(ProductGroup)
+            };
         }
     }
 }

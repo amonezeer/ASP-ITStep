@@ -1,6 +1,7 @@
 ﻿using ASP_ITStep.Data;
 using ASP_ITStep.Filters;
 using ASP_ITStep.Models.Api.Product;
+using ASP_ITStep.Models.Rest;
 using ASP_ITStep.Services.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,36 +26,49 @@ namespace ASP_ITStep.Controllers.Api
         [HttpPost]
         public async Task<object> CreateProduct(ApiProductFormModel formModel)
         {
+            RestResponse response = new();
+            response.Meta.ResourceName = "Shop Api 'product'";
+            response.Meta.ResourceUrl = $"/api/product";
+            response.Meta.Method = "POST";
+            response.Meta.Manipulations = ["POST", "PATCH", "DELETE"];
+            response.Meta.DataType = "string";
+
             if (string.IsNullOrWhiteSpace(formModel.GroupId) || !_dataAccessor.IsGroupExists(formModel.GroupId))
             {
-                return new { status = 400, name = "Неправильний або відсутній GroupId" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Неправильний або відсутній GroupId";
             }
 
             if (string.IsNullOrWhiteSpace(formModel.Name) || formModel.Name.Length < 3 || formModel.Name.Length > 100)
             {
-                return new { status = 400, name = "Некоректна назва товару" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Некоректна назва товару";
             }
 
             if (!string.IsNullOrWhiteSpace(formModel.Description) && formModel.Description.Length > 1000)
             {
-                return new { status = 400, name = "Опис занадто довгий" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Опис занадто довгий";
             }
 
             if (formModel.Price <= 0)
             {
-                return new { status = 400, name = "Ціна повинна бути більшою за 0" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Ціна повинна бути більшою за 0";
             }
 
             if (formModel.Stock < 0)
             {
-                return new { status = 400, name = "Кількість не може бути від’ємною" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Кількість не може бути від’ємною";
             }
 
             if (formModel.Slug != null)
             {
                 if (_dataAccessor.IsProductSlugUsed(formModel.Slug))
                 {
-                    return new { status = 500, name = "Slug вже використовується іншою групою" };
+                    response.Status = RestStatus.RestStatus500;
+                    response.Data = "Slug вже використовується іншою групою";
                 }
             }
 
@@ -69,7 +83,8 @@ namespace ASP_ITStep.Controllers.Api
                 }
                 catch (Exception ex)
                 {
-                    return new { status = 400, name = ex.Message };
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = $"{ex.Message}";
                 }
             }
 
@@ -86,16 +101,20 @@ namespace ASP_ITStep.Controllers.Api
                     Slug = formModel.Slug,
                 });
 
-                return new { status = 201, name = $"Товар {formModel.Name} створено" };
+                response.Status = RestStatus.RestStatus201;
+                response.Data = $"Товар {formModel.Name} створено";
             }
             catch (Exception e) when (e is ArgumentNullException || e is FormatException)
             {
-                return new { status = 400, name = e.Message };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = e.Message;
             }
             catch
             {
-                return new { status = 500, name = "Внутрішня помилка сервера" };
+                response.Status = RestStatus.RestStatus500;
+                response.Data = "Внутрішня помилка сервера";
             }
+            return response;
         }
     }
 }
