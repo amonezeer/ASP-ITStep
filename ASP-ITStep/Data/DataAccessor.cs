@@ -12,7 +12,71 @@ namespace ASP_ITStep.Data
 
         public void AddToCart(String userId, String productId)
         {
+            Guid userGuid = Guid.Parse(userId);
+            Guid productGuid = Guid.Parse(productId);
+            var user = _dataContext.Users.Find(userGuid) ??  throw new ArgumentException("user not found", nameof(userId));
+            var product = _dataContext.Products.Find(productGuid) ?? throw new ArgumentException("product not found", nameof(productId));
 
+            // якщо у користовуча є відкритий кошик , то
+            // якщо у кошику є такий товар , то збільшуємо його кількість
+            // інакше створюємо новий запис CartItem
+            // інашке створюємо новий кошик і додаємо товар.
+
+            var cart = _dataContext
+                .Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefault(c => c.UserId == userGuid && c.PaidAt == null && c.DeletedAt == null);
+            if (cart == null)
+            {
+                cart = new Cart
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.Now,
+                    Price = 0,
+                    UserId = userGuid,
+                };
+                _dataContext.Carts.Add(cart);
+            }
+            CartItem? cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productGuid);
+            if (cartItem == null)
+            {
+                cartItem = new CartItem
+                {
+                    Id = Guid.NewGuid(),
+                    CartId = cart.Id,
+                    Price = product.Price,
+                    Quatity = 1,
+                    ProductId = productGuid,
+                };
+                //cart.CartItems.Add(cartItem);
+                _dataContext.CartItems.Add(cartItem);
+                cart.Price += cartItem.Price;    // TODO : DiscountService
+            }
+            else
+            {
+                cartItem.Quatity += 1;
+                cartItem.Price += product.Price;
+                cart.Price += product.Price;   // TODO : DiscountService
+            }
+            _dataContext.SaveChanges();
+        }
+        
+        public IEnumerable<CartItem> GetActiveCartItems(String userId)
+        {
+            Guid userGuid = Guid.Parse(userId);
+            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user not found", nameof(userId));
+
+            var cart = _dataContext
+                .Carts
+                .AsNoTracking()
+                .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+                .FirstOrDefault(c => c.UserId == userGuid && c.PaidAt == null && c.DeletedAt == null);
+            return cart?.CartItems ?? [];
+        }
+        public IEnumerable<Cart> GetCarts()
+        {
+            return [];
         }
 
         public bool IsGroupSlugUsed(String slug)

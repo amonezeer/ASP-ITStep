@@ -103,6 +103,12 @@ body {
     display: none;
 }
 
+.v-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 @keyframes profileGlow {
     0% {
         border-color: transparent;

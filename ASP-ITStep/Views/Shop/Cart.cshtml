@@ -1,7 +1,51 @@
-﻿@{
+﻿@model ASP_ITStep.Models.Shop.ShopCartPageModel
+@{
     ViewData["Title"] = "Cart";
 }
 
 <div class="text-center">
     <h1 class="display-4">Мій кошик <i class="fa-solid fa-basket-shopping"></i></h1>
 </div>
+
+@if(Model.ActiveCartItems == null)
+{
+    <div class="alert alert-danger" role="alert">  Кошик буде доступним після входу в систему!</div>
+}
+else if(Model.ActiveCartItems.Count() == 0)
+{
+    <h2>Ваш кошик поки що порожній !</h2>
+}
+else
+{
+    foreach(var cartItem in Model.ActiveCartItems)
+    {
+        <div class="row align-items-center bg-light border rounded-3 p-3 mb-3 shadow-sm">
+            <div class="col-12 col-md-2 text-center mb-3 mb-md-0">
+                <img src="/Storage/Item/@(cartItem.Product.ImageUrl)"
+                     class="item-page-img img-fluid rounded"
+                     style="max-height: 100px; object-fit: cover;"
+                     alt="@cartItem.Product.Name" />
+            </div>
+            <div class="col-12 col-md-4">
+                <h6 class="mb-1">@cartItem.Product.Name</h6>
+                <p class="text-muted mb-0" style="font-size: 0.9rem;">@cartItem.Product.Description</p>
+            </div>
+            <div class="col-12 col-md-2 text-center">
+                <span class="fw-bold">₴@(cartItem.Product.Price)</span>
+            </div>
+            <div class="col-12 col-md-2 text-center">
+                <div class="input-group input-group-sm w-75 mx-auto">
+                    <button class="btn btn-outline-secondary" type="button">-</button>
+                    <input type="text" class="form-control text-center" value="@cartItem.Quatity" readonly style="max-width: 60px;">
+                    <button class="btn btn-outline-secondary" type="button">+</button>
+                </div>
+            </div>
+            <div class="col-12 col-md-1 text-center">
+                <span class="fw-bold">₴@(cartItem.Price)</span>
+            </div>
+            <div class="col-12 col-md-1 text-center">
+                <button class="btn btn-danger btn-sm">X</button>
+            </div>
+        </div>
+    }
+}
